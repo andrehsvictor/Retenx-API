@@ -28,6 +28,7 @@ public class KeycloakUserService {
     private static final String DEFAULT_REQUIRED_ACTION = "VERIFY_EMAIL";
 
     @Transactional
+    @CachePut(value = "userRepresentation", key = "#result.id")
     public UserRepresentation create(UserRepresentation userRepresentation) {
         userRepresentation.setEnabled(true);
         userRepresentation.setEmailVerified(false);
@@ -49,21 +50,26 @@ public class KeycloakUserService {
     }
 
     @Transactional
-    @CachePut(value = "keycloakUser", key = "#userRepresentation.id")
-    public void update(UserRepresentation userRepresentation) {
-        UserResource userResource = toUserResource(userRepresentation);
+    @CachePut(value = "userRepresentation", key = "#id")
+    public UserRepresentation update(String id, UserRepresentation userRepresentation) {
+        UserRepresentation currentUser = findById(id);
+        if (!currentUser.getEmail().equals(userRepresentation.getEmail())) {
+            currentUser.setEmailVerified(false);
+        }
+        UserResource userResource = toUserResource(currentUser);
         userResource.update(userRepresentation);
+        return findById(id);
     }
 
     @Transactional
-    @CacheEvict(value = "keycloakUser", key = "#id")
+    @CacheEvict(value = { "userRepresentation", "userResource" }, key = "#id")
     public void deleteById(String id) {
         UserRepresentation userRepresentation = findById(id);
         UserResource userResource = toUserResource(userRepresentation);
         userResource.remove();
     }
 
-    @Cacheable(value = "keycloakUser", key = "#id")
+    @Cacheable(value = "userRepresentation", key = "#id")
     public UserRepresentation findById(String id) {
         String search = String.format(SEARCH_BY_ID, id);
         List<UserRepresentation> users = realmResource.users().search(search, 0, 1);
@@ -73,20 +79,20 @@ public class KeycloakUserService {
         return users.getFirst();
     }
 
-    @Cacheable(value = "keycloakUser", key = "#id")
+    @Cacheable(value = "userRepresentation", key = "#id")
     public boolean existsById(String id) {
         String search = String.format(SEARCH_BY_ID, id);
         Integer count = realmResource.users().count(search);
         return count > 0;
     }
 
-    @Cacheable(value = "keycloakUser", key = "#email")
+    @Cacheable(value = "userRepresentation", key = "#email")
     public boolean isEmailVerified(String email) {
         UserRepresentation user = findByEmail(email);
         return user.isEmailVerified();
     }
 
-    @Cacheable(value = "keycloakUser", key = "#email")
+    @Cacheable(value = "userRepresentation", key = "#email")
     public UserRepresentation findByEmail(String email) {
         List<UserRepresentation> users = realmResource.users().searchByEmail(email, true);
         if (users.isEmpty()) {
@@ -95,7 +101,7 @@ public class KeycloakUserService {
         return users.getFirst();
     }
 
-    @CacheEvict(value = "keycloakUser", key = "findByEmail(#email).id")
+    @CacheEvict(value = { "userRepresentation", "userResource" }, key = "findByEmail(#email).id")
     public void sendVerificationEmail(String email) {
         UserRepresentation user = findByEmail(email);
         if (user.isEmailVerified()) {
@@ -111,7 +117,7 @@ public class KeycloakUserService {
         userResource.executeActionsEmail(List.of("UPDATE_PASSWORD"));
     }
 
-    @Cacheable(value = "keycloakUser", key = "#userRepresentation.id")
+    @Cacheable(value = "userResource", key = "#userRepresentation.id")
     public UserResource toUserResource(UserRepresentation userRepresentation) {
         return realmResource.users().get(userRepresentation.getId());
     }
