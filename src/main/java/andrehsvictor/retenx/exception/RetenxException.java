@@ -23,4 +23,8 @@ public class RetenxException extends RuntimeException {
         this.status = status;
         this.errors = List.of(error);
     }
+
+    public RetenxException(HttpStatus status) {
+        this.status = status;
+    }
 }
