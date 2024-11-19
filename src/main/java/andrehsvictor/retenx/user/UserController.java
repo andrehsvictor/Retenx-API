@@ -82,7 +82,7 @@ public class UserController {
     @PostMapping("/api/v1/users/verify-email")
     public ResponseEntity<Map<String, String>> sendVerifyEmail(@RequestBody @Valid EmailDto emailDto) {
         keycloakUserService.sendVerifyEmail(emailDto.getEmail());
-        Map<String, String> response = Map.of("message", "An e-mail was sent to verify your e-mail.");
+        Map<String, String> response = Map.of("message", "A verify e-mail was sent.");
         return ResponseEntity.ok(response);
     }
 }
