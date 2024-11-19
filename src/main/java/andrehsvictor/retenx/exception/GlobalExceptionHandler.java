@@ -28,6 +28,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RetenxException.class)
     public final ResponseEntity<ErrorDto<String>> handleRetenxException(RetenxException ex) {
+        if (ex.getErrors().isEmpty()) {
+            return ResponseEntity.status(ex.getStatus()).build();
+        }
         ErrorDto<String> errorDto = new ErrorDto<>();
         errorDto.setErrors(ex.getErrors());
         return ResponseEntity.status(ex.getStatus()).body(errorDto);
