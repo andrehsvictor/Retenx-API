@@ -1,0 +1,8 @@
+${AnsiColor.BLUE}${AnsiStyle.BOLD}  _____        _                     
+ |  __ \      | |                    
+ | |__) | ___ | |_  ___  _ __  __  __
+ |  _  / / _ \| __|/ _ \| '_ \ \ \/ /
+ | | \ \|  __/| |_|  __/| | | | >  < 
+ |_|  \_\\___| \__|\___||_| |_|/_/\_\ ${AnsiStyle.NORMAL}${AnsiColor.BLACK}${retenx.version}${AnsiColor.DEFAULT}
+
+ Powered by ${AnsiColor.GREEN}Spring Boot v${spring-boot.version}${AnsiColor.DEFAULT}
