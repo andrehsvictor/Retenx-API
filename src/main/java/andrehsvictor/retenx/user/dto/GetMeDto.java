@@ -8,7 +8,7 @@ import lombok.Setter;
 public class GetMeDto {
     private Long id;
     private String username;
-    private String keycloakId;
+    private String externalId;
     private String email;
     private boolean emailVerified;
     private String firstName;
