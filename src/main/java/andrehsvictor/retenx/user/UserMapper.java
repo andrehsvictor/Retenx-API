@@ -18,6 +18,6 @@ public interface UserMapper {
     GetMeDto toGetMeDto(User user, boolean emailVerified);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    User updateFromPutUserDto(@MappingTarget User user, PutUserDto putUserDto);
+    User updateFromPutUserDto(PutUserDto putUserDto, @MappingTarget User user);
 
 }
