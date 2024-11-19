@@ -1,0 +1,1 @@
+ALTER TABLE users RENAME COLUMN keycloak_id TO external_id;
