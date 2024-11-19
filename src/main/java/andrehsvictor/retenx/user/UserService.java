@@ -21,13 +21,13 @@ public class UserService {
     public User findOrCreateAuthenticatedUser() {
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                 .getAuthentication();
-        String keycloakId = jwtAuthenticationToken.getToken().getSubject();
-        if (!keycloakUserService.existsById(keycloakId)) {
-            throw new RetenxException(HttpStatus.NOT_FOUND, "User not found in Keycloak with ID: " + keycloakId + ".");
+        String subject = jwtAuthenticationToken.getToken().getSubject();
+        if (!keycloakUserService.existsById(subject)) {
+            throw new RetenxException(HttpStatus.UNAUTHORIZED);
         }
-        return userRepository.findByKeycloakId(keycloakId).orElseGet(() -> {
+        return userRepository.findByExternalId(subject).orElseGet(() -> {
             User.UserBuilder user = User.builder();
-            user.keycloakId(keycloakId);
+            user.externalId(subject);
             user.username(jwtAuthenticationToken.getToken().getClaimAsString("preferred_username"));
             user.email(jwtAuthenticationToken.getToken().getClaimAsString("email"));
             user.firstName(jwtAuthenticationToken.getToken().getClaimAsString("given_name"));
