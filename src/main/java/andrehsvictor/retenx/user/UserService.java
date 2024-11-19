@@ -1,5 +1,7 @@
 package andrehsvictor.retenx.user;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -37,17 +39,20 @@ public class UserService {
         });
     }
 
+    @Cacheable(value = "user", key = "#id")
     public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RetenxException(HttpStatus.NOT_FOUND, "User not found with ID: " + id + "."));
     }
 
     @Transactional
+    @Cacheable(value = "user", key = "#result.id")
     public User save(User user) {
         return userRepository.save(user);
     }
 
     @Transactional
+    @CacheEvict(value = "user", key = "#id")
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
