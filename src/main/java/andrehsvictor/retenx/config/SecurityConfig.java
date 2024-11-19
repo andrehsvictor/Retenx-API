@@ -19,7 +19,8 @@ public class SecurityConfig {
     };
 
     public static final String[] ALLOWED_PATHS_WITH_POST_METHOD = {
-            "/api/v1/users"
+            "/api/v1/users",
+            "/api/v1/users/verify-email",
     };
 
     public static final String[] ALLOWED_PATHS_WITH_GET_METHOD = {
