@@ -13,7 +13,7 @@ import andrehsvictor.retenx.user.dto.PutUserDto;
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface UserMapper {
 
-    User toUser(PostUserDto postUserDto, String keycloakId);
+    User toUser(PostUserDto postUserDto, String externalId);
 
     GetMeDto toGetMeDto(User user, boolean emailVerified);
 
