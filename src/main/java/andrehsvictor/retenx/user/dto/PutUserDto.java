@@ -27,10 +27,6 @@ public class PutUserDto {
     @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters.")
     private String username;
 
-    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters.")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one lowercase letter, one uppercase letter, and one digit.")
-    private String password;
-
     @Size(max = 500, message = "Bio must be less than 500 characters.")
     private String bio;
 
