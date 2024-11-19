@@ -34,7 +34,7 @@ public class User implements Serializable {
 
     private String username;
     private String email;
-    private String keycloakId;
+    private String externalId;
     private String firstName;
     private String lastName;
     private String bio;
