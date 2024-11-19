@@ -6,6 +6,8 @@ import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,13 +39,28 @@ public class KeycloakUserService {
             case 201:
                 break;
             case 409:
-                throw new RetenxException(HttpStatus.CONFLICT, "User already exists in Keycloak.");
+                throw new RetenxException(HttpStatus.CONFLICT, "Username or e-mail already in use.");
             default:
-                throw new RetenxException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating user in Keycloak.");
+                throw new RetenxException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while creating user.");
         }
         String userId = CreatedResponseUtil.getCreatedId(response);
 
         return findById(userId);
+    }
+
+    @Transactional
+    @CachePut(value = "keycloakUser", key = "#userRepresentation.id")
+    public void update(UserRepresentation userRepresentation) {
+        UserResource userResource = toUserResource(userRepresentation);
+        userResource.update(userRepresentation);
+    }
+
+    @Transactional
+    @CacheEvict(value = "keycloakUser", key = "#id")
+    public void deleteById(String id) {
+        UserRepresentation userRepresentation = findById(id);
+        UserResource userResource = toUserResource(userRepresentation);
+        userResource.remove();
     }
 
     @Cacheable(value = "keycloakUser", key = "#id")
@@ -51,7 +68,7 @@ public class KeycloakUserService {
         String search = String.format(SEARCH_BY_ID, id);
         List<UserRepresentation> users = realmResource.users().search(search, 0, 1);
         if (users.isEmpty()) {
-            throw new RetenxException(HttpStatus.NOT_FOUND, "User not found in Keycloak with ID: " + id + ".");
+            throw new RetenxException(HttpStatus.NOT_FOUND, "User not found with external ID: " + id + ".");
         }
         return users.getFirst();
     }
@@ -73,11 +90,12 @@ public class KeycloakUserService {
     public UserRepresentation findByEmail(String email) {
         List<UserRepresentation> users = realmResource.users().searchByEmail(email, true);
         if (users.isEmpty()) {
-            throw new RetenxException(HttpStatus.NOT_FOUND, "User not found in Keycloak with e-mail: " + email + ".");
+            throw new RetenxException(HttpStatus.NOT_FOUND, "User not found with e-mail: " + email + ".");
         }
         return users.getFirst();
     }
 
+    @CacheEvict(value = "keycloakUser", key = "findByEmail(#email).id")
     public void sendVerificationEmail(String email) {
         UserRepresentation user = findByEmail(email);
         if (user.isEmailVerified()) {
@@ -93,6 +111,7 @@ public class KeycloakUserService {
         userResource.executeActionsEmail(List.of("UPDATE_PASSWORD"));
     }
 
+    @Cacheable(value = "keycloakUser", key = "#userRepresentation.id")
     public UserResource toUserResource(UserRepresentation userRepresentation) {
         return realmResource.users().get(userRepresentation.getId());
     }
