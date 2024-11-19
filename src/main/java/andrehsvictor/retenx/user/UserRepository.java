@@ -10,6 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    Optional<User> findByKeycloakId(String keycloakId);
+    Optional<User> findByExternalId(String externalId);
     
 }
