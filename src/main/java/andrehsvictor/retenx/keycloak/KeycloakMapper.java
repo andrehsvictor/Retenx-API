@@ -5,11 +5,14 @@ import java.util.List;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.MappingConstants.ComponentModel;
 
 import andrehsvictor.retenx.user.dto.PostUserDto;
+import andrehsvictor.retenx.user.dto.PutUserDto;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface KeycloakMapper {
@@ -26,5 +29,8 @@ public interface KeycloakMapper {
 
         userRepresentation.setCredentials(List.of(credentialRepresentation));
     }
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    UserRepresentation updateFromPutUserDto(PutUserDto putUserDto, @MappingTarget UserRepresentation userRepresentation);
 
 }
