@@ -1,6 +1,7 @@
 package andrehsvictor.retenx.user;
 
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,7 +47,7 @@ public class UserService {
     }
 
     @Transactional
-    @Cacheable(value = "user", key = "#result.id")
+    @CachePut(value = "user", key = "#result.id")
     public User save(User user) {
         return userRepository.save(user);
     }
