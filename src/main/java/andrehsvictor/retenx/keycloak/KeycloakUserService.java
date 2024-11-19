@@ -102,7 +102,7 @@ public class KeycloakUserService {
     }
 
     @CacheEvict(value = { "userRepresentation", "userResource" }, key = "findByEmail(#email).id")
-    public void sendVerificationEmail(String email) {
+    public void sendVerifyEmail(String email) {
         UserRepresentation user = findByEmail(email);
         if (user.isEmailVerified()) {
             throw new RetenxException(HttpStatus.BAD_REQUEST, "E-mail already verified.");
