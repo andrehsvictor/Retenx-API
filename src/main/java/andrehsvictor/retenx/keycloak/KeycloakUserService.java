@@ -50,11 +50,11 @@ public class KeycloakUserService {
     }
 
     @Transactional
-    @CachePut(value = "userRepresentation", key = "#id")
+    @CachePut(value = { "userRepresentation", "userResource", "userRepresentationIsEmailVerified" }, key = "#id")
     public UserRepresentation update(String id, UserRepresentation userRepresentation) {
         UserRepresentation currentUser = findById(id);
         if (!currentUser.getEmail().equals(userRepresentation.getEmail())) {
-            currentUser.setEmailVerified(false);
+            userRepresentation.setEmailVerified(false);
         }
         UserResource userResource = toUserResource(currentUser);
         userResource.update(userRepresentation);
@@ -62,7 +62,8 @@ public class KeycloakUserService {
     }
 
     @Transactional
-    @CacheEvict(value = { "userRepresentation", "userResource" }, key = "#id")
+    @CacheEvict(value = { "userRepresentation", "userResource", "userRepresentationExistsById",
+            "userRepresentationIsEmailVerified" }, key = "#id")
     public void deleteById(String id) {
         UserRepresentation userRepresentation = findById(id);
         UserResource userResource = toUserResource(userRepresentation);
@@ -79,14 +80,14 @@ public class KeycloakUserService {
         return users.getFirst();
     }
 
-    @Cacheable(value = "userRepresentation", key = "#id")
+    @Cacheable(value = "userRepresentationExistsById", key = "#id")
     public boolean existsById(String id) {
         String search = String.format(SEARCH_BY_ID, id);
         Integer count = realmResource.users().count(search);
         return count > 0;
     }
 
-    @Cacheable(value = "userRepresentation", key = "#email")
+    @Cacheable(value = "userRepresentationIsEmailVerified", key = "#email")
     public boolean isEmailVerified(String email) {
         UserRepresentation user = findByEmail(email);
         return user.isEmailVerified();
