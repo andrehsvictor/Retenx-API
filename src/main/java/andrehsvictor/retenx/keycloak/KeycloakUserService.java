@@ -29,7 +29,7 @@ public class KeycloakUserService {
 
     @Transactional
     @CachePut(value = "userRepresentation", key = "#result.id")
-    public UserRepresentation create(UserRepresentation userRepresentation) {
+    public UserRepresentation register(UserRepresentation userRepresentation) {
         userRepresentation.setEnabled(true);
         userRepresentation.setEmailVerified(false);
         userRepresentation.setRealmRoles(List.of(DEFAULT_USER_ROLE));
