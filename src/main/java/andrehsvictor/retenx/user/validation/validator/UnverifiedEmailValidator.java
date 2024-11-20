@@ -2,7 +2,7 @@ package andrehsvictor.retenx.user.validation.validator;
 
 import org.springframework.stereotype.Component;
 
-import andrehsvictor.retenx.keycloak.KeycloakUserService;
+import andrehsvictor.retenx.user.UserService;
 import andrehsvictor.retenx.user.validation.UnverifiedEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -12,11 +12,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UnverifiedEmailValidator implements ConstraintValidator<UnverifiedEmail, String> {
 
-    private final KeycloakUserService keycloakUserService;
+    private final UserService userService;
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        return !keycloakUserService.isEmailVerified(email);
+        return !userService.isEmailVerified(email);
     }
 
 }
