@@ -12,12 +12,8 @@ import andrehsvictor.retenx.user.UserMapper;
 @Mapper(componentModel = ComponentModel.SPRING, imports = DeckVisibility.class, uses = UserMapper.class)
 public interface DeckMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "author", source = "user")
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "visibility", defaultExpression = "java(DeckVisibility.PRIVATE)")
-    Deck toDeck(PostDeckDto postDeckDto, User user);
+    Deck toDeck(PostDeckDto postDeckDto);
 
     GetDeckDto toGetDeckDto(Deck deck);
     
