@@ -4,6 +4,7 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,5 +35,10 @@ public class KeycloakConfig {
     @Bean
     RealmResource realmResource(Keycloak keycloak) {
         return keycloak.realm(keycloakProperties.getRealm());
+    }
+
+    @Bean
+    UsersResource usersResource(RealmResource realmResource) {
+        return realmResource.users();
     }
 }
