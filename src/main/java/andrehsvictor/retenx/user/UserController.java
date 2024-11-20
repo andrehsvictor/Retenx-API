@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/api/v1/users")
     public ResponseEntity<GetMeDto> create(@RequestBody @Valid PostUserDto postUserDto) {
         UserRepresentation userRepresentation = keycloakMapper.toUserRepresentation(postUserDto);
-        userRepresentation = keycloakUserService.create(userRepresentation);
+        userRepresentation = keycloakUserService.register(userRepresentation);
         User user = userMapper.toUser(postUserDto, userRepresentation.getId());
         user = userService.save(user);
         GetMeDto getMeDto = userMapper.toGetMeDto(user, userRepresentation.isEmailVerified());
