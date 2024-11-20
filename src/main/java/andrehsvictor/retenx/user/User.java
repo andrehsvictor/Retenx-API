@@ -2,13 +2,13 @@ package andrehsvictor.retenx.user;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -39,6 +39,9 @@ public class User implements Serializable {
     private String lastName;
     private String bio;
     private String avatarUrl;
+
+    @Transient
+    private String password;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
