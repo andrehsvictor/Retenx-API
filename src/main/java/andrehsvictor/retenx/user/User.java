@@ -45,6 +45,9 @@ public class User implements Serializable {
     @ToString.Exclude
     private String password;
 
+    @Transient
+    private boolean emailVerified;
+
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
