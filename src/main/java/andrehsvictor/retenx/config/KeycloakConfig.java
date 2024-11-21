@@ -19,8 +19,8 @@ public class KeycloakConfig {
 
     @Bean
     Keycloak keycloak() {
-        String username = keycloakProperties.getAdmin().get("username");
-        String password = keycloakProperties.getAdmin().get("password");
+        String username = keycloakProperties.getAdmin().getUsername();
+        String password = keycloakProperties.getAdmin().getPassword();
         return KeycloakBuilder.builder()
                 .serverUrl(keycloakProperties.getAuthServerUrl())
                 .realm(keycloakProperties.getRealm())

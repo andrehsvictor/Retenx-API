@@ -1,15 +1,12 @@
 package andrehsvictor.retenx.property;
 
-import java.util.Map;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,8 +30,7 @@ public class KeycloakProperties {
     @NotBlank(message = "Keycloak client secret must be provided.")
     private String clientSecret;
 
-    @NotEmpty(message = "Keycloak admin credentials must be provided.")
-    @Size(min = 2, max = 2, message = "Keycloak admin credentials must have username and password.")
-    private Map<String, String> admin;
-    
+    @NotNull(message = "Keycloak admin properties must be provided.")
+    private KeycloakAdminCredentials admin;
+
 }
