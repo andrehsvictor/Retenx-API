@@ -36,6 +36,14 @@ public class KeycloakUserService {
         return keycloakUserRepository.existsById(id);
     }
 
+    public boolean existsByUsername(String username) {
+        return keycloakUserRepository.existsByUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return keycloakUserRepository.existsByEmail(email);
+    }
+
     public KeycloakUser findByUsername(String username) {
         return keycloakUserRepository.findByUsername(username)
                 .orElseThrow(() -> new RetenxException(HttpStatus.NOT_FOUND,
