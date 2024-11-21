@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -41,6 +42,7 @@ public class User implements Serializable {
     private String avatarUrl;
 
     @Transient
+    @ToString.Exclude
     private String password;
 
     @Builder.Default
