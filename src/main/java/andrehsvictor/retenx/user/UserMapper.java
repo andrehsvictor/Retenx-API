@@ -8,6 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import andrehsvictor.retenx.keycloak.user.KeycloakUser;
 import andrehsvictor.retenx.user.dto.GetMeDto;
+import andrehsvictor.retenx.user.dto.GetUserDto;
 import andrehsvictor.retenx.user.dto.PostUserDto;
 import andrehsvictor.retenx.user.dto.PutUserDto;
 
@@ -15,6 +16,9 @@ import andrehsvictor.retenx.user.dto.PutUserDto;
 public interface UserMapper {
 
     GetMeDto userToGetMeDto(User user);
+
+    @Mapping(target = "fullName", expression = "java(user.getFirstName() + \" \" + user.getLastName())")
+    GetUserDto userToGetUserDto(User user);
 
     User postUserDtoToUser(PostUserDto postUserDto);
 
