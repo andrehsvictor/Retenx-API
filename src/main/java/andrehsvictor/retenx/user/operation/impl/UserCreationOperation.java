@@ -24,6 +24,9 @@ public class UserCreationOperation implements UserOperation {
     @Override
     public UserOperationOutput execute(UserOperationInput input) {
         User user = input.getUser();
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
         KeycloakUser keycloakUser = keycloakUserCreator.create(user);
         keycloakUser = keycloakUserService.save(keycloakUser);
         user.setExternalId(keycloakUser.getId());
