@@ -25,20 +25,20 @@ public class UserFacade {
     }
 
     public GetMeDto update(String externalId, PutUserDto putUserDto) {
-        User user = userService.findOrCreateByExternalId(externalId);
+        User user = userService.findByExternalId(externalId);
         user = userMapper.updateUserFromPutUserDto(putUserDto, user);
         user = userService.save(user);
         return userMapper.userToGetMeDto(user);
     }
 
     public GetMeDto getMe(String externalId) {
-        User user = userService.findOrCreateByExternalId(externalId);
+        User user = userService.findByExternalId(externalId);
         return userMapper.userToGetMeDto(user);
     }
 
     public void delete(String externalId) {
-        User user = userService.findOrCreateByExternalId(externalId);
-        userService.deleteById(user.getId());
+        User user = userService.findByExternalId(externalId);
+        userService.delete(user);
     }
 
     public Map<String, String> sendVerifyEmail(EmailDto emailDto) {

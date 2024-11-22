@@ -15,12 +15,7 @@ public interface KeycloakUserMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "emailVerified", ignore = true)
-    @Mapping(target = "avatarUrl", conditionExpression = "java(user.getAvatarUrl() != null)")
-    @Mapping(target = "email", conditionExpression = "java(user.getEmail() != null)")
-    @Mapping(target = "firstName", conditionExpression = "java(user.getFirstName() != null)")
-    @Mapping(target = "lastName", conditionExpression = "java(user.getLastName() != null)")
-    @Mapping(target = "username", conditionExpression = "java(user.getUsername() != null)")
-    KeycloakUser updateKeycloakUserFromUser(User user);
+    KeycloakUser updateKeycloakUserFromUser(User user, @MappingTarget KeycloakUser keycloakUser);
 
     @AfterMapping
     default void afterMapping(User user, @MappingTarget KeycloakUser keycloakUser) {

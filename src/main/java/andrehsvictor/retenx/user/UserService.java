@@ -4,8 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import andrehsvictor.retenx.exception.RetenxException;
-import andrehsvictor.retenx.keycloak.user.KeycloakUser;
-import andrehsvictor.retenx.keycloak.user.KeycloakUserService;
+import andrehsvictor.retenx.user.operation.UserOperationFactory;
+import andrehsvictor.retenx.user.operation.UserOperationInput;
+import andrehsvictor.retenx.user.operation.UserOperationOutput;
+import andrehsvictor.retenx.user.operation.UserOperationType;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -13,26 +15,25 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserSavingOperationFactory userSavingOperationFactory;
-    private final UserMapper userMapper;
-    private final KeycloakUserService keycloakUserService;
+    private final UserOperationFactory userOperationFactory;
 
     public User save(User user) {
-        UserSavingOperation userSavingOperation;
+        UserOperationInput input = new UserOperationInput(user);
         if (user.getId() == null) {
-            userSavingOperation = userSavingOperationFactory.getOperation("create");
-            return userSavingOperation.save(user);
+            UserOperationOutput output = userOperationFactory.get(UserOperationType.CREATE).execute(input);
+            return output.getUser();
         }
-        userSavingOperation = userSavingOperationFactory.getOperation("update");
-        return userSavingOperation.save(user);
+        UserOperationOutput output = userOperationFactory.get(UserOperationType.UPDATE).execute(input);
+        return output.getUser();
     }
 
     public boolean existsByExternalId(String externalId) {
         return userRepository.existsByExternalId(externalId);
     }
 
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    public void delete(User user) {
+        UserOperationInput input = new UserOperationInput(user);
+        userOperationFactory.get(UserOperationType.DELETE).execute(input);
     }
 
     public User findById(Long id) {
@@ -40,18 +41,10 @@ public class UserService {
                 .orElseThrow(() -> new RetenxException(HttpStatus.NOT_FOUND, "User not found with ID: " + id + "."));
     }
 
-    public User findOrCreateByExternalId(String externalId) {
-        if (!keycloakUserService.existsById(externalId)) {
-            throw new RetenxException(HttpStatus.UNAUTHORIZED);
-        }
-        User user = userRepository.findByExternalId(externalId).orElseGet(() -> {
-            KeycloakUser keycloakUser = keycloakUserService.findById(externalId);
-            User newUser = userMapper.keycloakUserToUser(keycloakUser);
-            return save(newUser);
-        });
-        boolean emailVerified = keycloakUserService.isEmailVerified(externalId);
-        user.setEmailVerified(emailVerified);
-        return user;
+    public User findByExternalId(String externalId) {
+        UserOperationInput input = new UserOperationInput(externalId);
+        UserOperationOutput output = userOperationFactory.get(UserOperationType.FIND_BY_EXTERNAL_ID).execute(input);
+        return output.getUser();
     }
 
     public boolean existsByUsername(String username) {

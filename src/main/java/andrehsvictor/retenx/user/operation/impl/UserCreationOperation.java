@@ -1,4 +1,4 @@
-package andrehsvictor.retenx.user.impl;
+package andrehsvictor.retenx.user.operation.impl;
 
 import org.springframework.stereotype.Component;
 
@@ -7,24 +7,30 @@ import andrehsvictor.retenx.keycloak.user.KeycloakUserCreator;
 import andrehsvictor.retenx.keycloak.user.KeycloakUserService;
 import andrehsvictor.retenx.user.User;
 import andrehsvictor.retenx.user.UserRepository;
-import andrehsvictor.retenx.user.UserSavingOperation;
+import andrehsvictor.retenx.user.operation.UserOperation;
+import andrehsvictor.retenx.user.operation.UserOperationInput;
+import andrehsvictor.retenx.user.operation.UserOperationOutput;
+import andrehsvictor.retenx.user.operation.UserOperationType;
 import lombok.RequiredArgsConstructor;
 
-@Component
 @RequiredArgsConstructor
-public class UserCreationOperation implements UserSavingOperation {
+@Component(UserOperationType.CREATE)
+public class UserCreationOperation implements UserOperation {
+
     private final UserRepository userRepository;
-    private final KeycloakUserCreator keycloakUserCreator;
     private final KeycloakUserService keycloakUserService;
+    private final KeycloakUserCreator keycloakUserCreator;
 
     @Override
-    public User save(User user) {
+    public UserOperationOutput execute(UserOperationInput input) {
+        User user = input.getUser();
         KeycloakUser keycloakUser = keycloakUserCreator.create(user);
         keycloakUser = keycloakUserService.save(keycloakUser);
-        user.setExternalId(keycloakUser.getId());
         user = userRepository.save(user);
         user.setEmailVerified(keycloakUser.isEmailVerified());
-        return user;
+        return UserOperationOutput.builder()
+                .user(user)
+                .build();
     }
 
 }
