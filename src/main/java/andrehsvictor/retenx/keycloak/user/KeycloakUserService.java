@@ -2,7 +2,7 @@ package andrehsvictor.retenx.keycloak.user;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.CacheConfig;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,23 +14,15 @@ import andrehsvictor.retenx.exception.RetenxException;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@CacheConfig(cacheNames = { "keycloakUser", "existsById", "existsByUsername", "existsByEmail" })
 @RequiredArgsConstructor
 public class KeycloakUserService {
 
     private final KeycloakUserRepository keycloakUserRepository;
+    private final UsersResource usersResource;
 
-    @Caching(put = {
-            @CachePut(value = "keycloakUser", key = "#result.id"),
-            @CachePut(value = "keycloakUser", key = "#result.email"),
-            @CachePut(value = "keycloakUser", key = "#result.username")
-    })
+    @CachePut(value = "keycloakUser", key = "{ #result.id, #result.username, #result.email }")
     public KeycloakUser save(KeycloakUser keycloakUser) {
         return keycloakUserRepository.save(keycloakUser);
-    }
-
-    public void delete(KeycloakUser keycloakUser) {
-        keycloakUserRepository.delete(keycloakUser);
     }
 
     @Caching(evict = {
@@ -50,15 +42,15 @@ public class KeycloakUserService {
     }
 
     public boolean existsById(String id) {
-        return findById(id) != null;
+        return keycloakUserRepository.existsById(id);
     }
 
     public boolean existsByUsername(String username) {
-        return findByUsername(username) != null;
+        return keycloakUserRepository.existsByUsername(username);
     }
 
     public boolean existsByEmail(String email) {
-        return findByEmail(email) != null;
+        return keycloakUserRepository.existsByEmail(email);
     }
 
     @Cacheable(value = "keycloakUser", key = "#username")
@@ -79,21 +71,17 @@ public class KeycloakUserService {
         return findByEmail(email).isEmailVerified();
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "keycloakUser", key = "#email"),
-            @CacheEvict(value = "keycloakUser", key = "findByEmail(#email).username"),
-            @CacheEvict(value = "keycloakUser", key = "findByEmail(#email).id")
-    })
+    @CacheEvict(value = "keycloakUser", key = "{ #email }")
     public void sendVerifyEmail(String email) {
         KeycloakUser keycloakUser = findByEmail(email);
         if (keycloakUser.isEmailVerified()) {
             throw new RetenxException(HttpStatus.BAD_REQUEST, "E-mail already verified.");
         }
-        keycloakUser.sendVerifyEmail();
+        usersResource.get(keycloakUser.getId()).sendVerifyEmail();
     }
 
     public void sendUpdatePasswordEmail(String email) {
         KeycloakUser keycloakUser = findByEmail(email);
-        keycloakUser.executeActionsEmail(List.of("UPDATE_PASSWORD"));
+        usersResource.get(keycloakUser.getId()).executeActionsEmail(List.of("UPDATE_PASSWORD"));
     }
 }
