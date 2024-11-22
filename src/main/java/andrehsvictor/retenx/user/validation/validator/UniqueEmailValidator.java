@@ -21,7 +21,7 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
         if (email == null) {
             return true;
         }
-        return !userService.existsByEmail(email) || !keycloakUserService.existsByEmail(email);
+        return !userService.existsByEmail(email) && !keycloakUserService.existsByEmail(email);
     }
 
 }
