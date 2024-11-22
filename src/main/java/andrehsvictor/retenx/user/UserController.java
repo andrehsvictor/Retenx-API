@@ -52,6 +52,11 @@ public class UserController {
         return ResponseEntity.ok(userFacade.sendVerifyEmail(emailDto));
     }
 
+    @PutMapping("/api/v1/users/password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid EmailDto emailDto) {
+        return ResponseEntity.ok(userFacade.sendUpdatePasswordEmail(emailDto));
+    }
+
     @GetMapping("/api/v1/users/me")
     public ResponseEntity<GetMeDto> getMe(JwtAuthenticationToken jwt) {
         String externalId = jwt.getToken().getClaim("sub");
