@@ -1,6 +1,7 @@
 package andrehsvictor.retenx.user.operation;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,8 @@ public class UserOperationFactory {
     private final Map<String, UserOperation> userOperations;
 
     public UserOperation get(String operationType) {
-        return userOperations.get(operationType);
+        Optional<UserOperation> userOperation = Optional.ofNullable(userOperations.get(operationType));
+        return userOperation
+                .orElseThrow(() -> new IllegalArgumentException("Invalid operation type: " + operationType));
     }
 }
