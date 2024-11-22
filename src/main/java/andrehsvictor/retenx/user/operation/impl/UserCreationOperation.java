@@ -26,6 +26,7 @@ public class UserCreationOperation implements UserOperation {
         User user = input.getUser();
         KeycloakUser keycloakUser = keycloakUserCreator.create(user);
         keycloakUser = keycloakUserService.save(keycloakUser);
+        user.setExternalId(keycloakUser.getId());
         user = userRepository.save(user);
         user.setEmailVerified(keycloakUser.isEmailVerified());
         return UserOperationOutput.builder()
