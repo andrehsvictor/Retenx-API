@@ -2,7 +2,10 @@ package andrehsvictor.retenx.deck;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import andrehsvictor.retenx.deckUser.DeckUser;
 import andrehsvictor.retenx.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -47,6 +51,10 @@ public class Deck implements Serializable {
     private User author;
 
     private String hexColor;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "deck")
+    private Set<DeckUser> users = new HashSet<>();
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
