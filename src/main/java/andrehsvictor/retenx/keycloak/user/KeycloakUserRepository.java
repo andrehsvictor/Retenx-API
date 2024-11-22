@@ -24,10 +24,10 @@ public class KeycloakUserRepository {
 
     public KeycloakUser save(KeycloakUser keycloakUser) {
         if (keycloakUser.getId() != null) {
-            keycloakUser.update();
+            usersResource.get(keycloakUser.getId()).update(keycloakUser.getUserRepresentation());
             return keycloakUser;
         }
-        Response response = usersResource.create(keycloakUser.toRepresentation());
+        Response response = usersResource.create(keycloakUser.getUserRepresentation());
         switch (response.getStatus()) {
             case 201:
                 break;
@@ -37,14 +37,7 @@ public class KeycloakUserRepository {
                 throw new RetenxException(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating user.");
         }
         String id = CreatedResponseUtil.getCreatedId(response);
-        return new KeycloakUser(getUserResourceById(id));
-    }
-
-    public void delete(KeycloakUser keycloakUser) {
-        if (keycloakUser.getId() == null) {
-            throw new RetenxException(HttpStatus.INTERNAL_SERVER_ERROR, "User ID is null.");
-        }
-        keycloakUser.delete();
+        return new KeycloakUser(getUserResourceById(id).toRepresentation());
     }
 
     public void deleteById(String id) {
@@ -80,13 +73,14 @@ public class KeycloakUserRepository {
         List<UserRepresentation> userRepresentations;
         if (key.equals("email")) {
             userRepresentations = usersResource.searchByEmail(value, true);
+        } else {
+            userRepresentations = usersResource.search(query, 0, 1);
         }
-        userRepresentations = usersResource.search(query, 0, 1);
         if (userRepresentations.isEmpty()) {
             return Optional.empty();
         }
         UserRepresentation userRepresentation = userRepresentations.getFirst();
-        KeycloakUser keycloakUser = new KeycloakUser(getUserResourceById(userRepresentation.getId()));
+        KeycloakUser keycloakUser = new KeycloakUser(userRepresentation);
         return Optional.of(keycloakUser);
     }
 
