@@ -43,11 +43,8 @@ public class User implements Serializable {
     private String avatarUrl;
 
     @Transient
-    @ToString.Exclude
+    @ToString.Include(name = "[PROTECTED]")
     private String password;
-
-    @Transient
-    private boolean emailVerified;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
