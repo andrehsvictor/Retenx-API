@@ -68,6 +68,10 @@ public class KeycloakUser implements Serializable {
         userRepresentation.singleAttribute(key, value);
     }
 
+    public void setId(String id) {
+        userRepresentation.setId(id);
+    }
+
     public void setFirstName(String firstName) {
         userRepresentation.setFirstName(firstName);
     }
