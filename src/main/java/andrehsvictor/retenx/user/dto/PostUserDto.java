@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -32,6 +33,7 @@ public class PostUserDto {
     @NotBlank(message = "Username is required.")
     private String username;
 
+    @ToString.Exclude
     @NotBlank(message = "Password is required.")
     @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one lowercase letter, one uppercase letter, and one digit.")
@@ -43,4 +45,5 @@ public class PostUserDto {
     @Size(min = 5, max = 2000, message = "Avatar URL must be between 5 and 2000 characters.")
     @Pattern(regexp = "^(http|https)://.*$", message = "Avatar URL must be a valid URL.")
     private String avatarUrl;
+
 }
